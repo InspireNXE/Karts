@@ -130,6 +130,26 @@ public class Karts {
                             return CommandResult.success();
                         }).build(), "start")
                 .child(CommandSpec.builder()
+                        .arguments(optional(world(Text.of("world"))))
+                        .executor((src, args) -> {
+                            final Optional<WorldProperties> optProperties = args.getOne("world");
+                            final World world;
+                            if (optProperties.isPresent()) {
+                                world = Sponge.getServer().getWorld(optProperties.get().getWorldName()).orElseThrow(() -> new
+                                        CommandException(Text.of("World provided is not online!")));
+                            } else if (src instanceof Player){
+                                world = ((Player) src).getWorld();
+                            } else {
+                                throw new CommandException(Text.of("World was not provided!"));
+                            }
+
+                            if (!this.trackManager.endRace(world)) {
+                                throw new CommandException(Text.of("Failed to end race!"));
+                            }
+
+                            return CommandResult.success();
+                        }).build(), "end")
+                .child(CommandSpec.builder()
                         .arguments(world(Text.of("world")))
                         .executor((src, args) -> {
                             if (!(src instanceof Player)) {
