@@ -31,6 +31,11 @@ import org.spongepowered.api.boss.BossBarOverlays;
 import org.spongepowered.api.boss.ServerBossBar;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scheduler.Task;
+import org.spongepowered.api.scoreboard.Scoreboard;
+import org.spongepowered.api.scoreboard.critieria.Criteria;
+import org.spongepowered.api.scoreboard.displayslot.DisplaySlots;
+import org.spongepowered.api.scoreboard.objective.Objective;
+import org.spongepowered.api.scoreboard.objective.displaymode.ObjectiveDisplayModes;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.title.Title;
@@ -203,8 +208,6 @@ abstract class RaceCountdown implements Runnable {
                             case 3:
                                 player.sendTitle(trackTitles.get(3));
                                 break;
-                            default:
-                                break;
                         }
                     }
                 }
@@ -252,12 +255,8 @@ abstract class RaceCountdown implements Runnable {
                         bossBar.setColor(BossBarColors.RED);
                         break;
                 }
-                for (Player player : world.getPlayers()) {
-                    // Make sure a player ref isn't still here
-                    if (player.isOnline() && !bossBar.getPlayers().contains(player)) {
-                        bossBar.addPlayer(player);
-                    }
-                }
+                // Make sure a player ref isn't still here
+                world.getPlayers().stream().filter(player -> player.isOnline() && !bossBar.getPlayers().contains(player)).forEach(bossBar::addPlayer);
 
                 ticks--;
                 if (ticks < 0) {
