@@ -41,9 +41,7 @@ public final class IceArenaModifier implements WorldGeneratorModifier {
     public void modifyWorldGenerator(WorldProperties world, DataContainer settings, WorldGenerator worldGenerator) {
         WorldGeneratorUtil.clearGenerator(worldGenerator);
         worldGenerator.setBiomeGenerator(new SingleBiomeGenerator(BiomeTypes.FROZEN_OCEAN));
-        final Double radiusX = settings.getDouble(DataQuery.of("radiusX")).get();
-        final Double radiusZ = settings.getDouble(DataQuery.of("radiusZ")).get();
-        worldGenerator.setBaseGenerationPopulator(new FixedSizeCylinderBarrierGenerator(radiusX, radiusZ));
+        worldGenerator.setBaseGenerationPopulator(new FixedSizeCylinderBarrierGenerator(75.5, 75.5));
     }
 
     @Override

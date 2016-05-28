@@ -27,8 +27,8 @@ package org.inspirenxe.karts.track;
 import org.inspirenxe.karts.Karts;
 import org.inspirenxe.karts.track.modifier.arena.IceArenaModifier;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.world.WorldCreationSettings;
-import org.spongepowered.api.world.WorldCreationSettingsTypes;
+import org.spongepowered.api.world.WorldArchetype;
+import org.spongepowered.api.world.WorldArchetypes;
 import org.spongepowered.api.world.gen.WorldGeneratorModifier;
 
 public final class Tracks {
@@ -37,7 +37,7 @@ public final class Tracks {
     }
 
     public static final class Arenas {
-        public static final WorldCreationSettings ICE_ARENA = WorldCreationSettings.builder().from(WorldCreationSettingsTypes.OVERWORLD)
+        public static final WorldArchetype ICE_ARENA = WorldArchetype.builder().from(WorldArchetypes.OVERWORLD)
                 .generatorModifiers(Sponge.getRegistry().register(WorldGeneratorModifier.class, new IceArenaModifier())).build(Karts
                         .PLUGIN_ID + ":track_arena_ice",
                         "Ice Arena");
