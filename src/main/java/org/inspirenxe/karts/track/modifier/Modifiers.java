@@ -22,30 +22,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.inspirenxe.karts.track;
+package org.inspirenxe.karts.track.modifier;
 
-import org.inspirenxe.karts.Karts;
-import org.inspirenxe.karts.track.modifier.Modifiers;
 import org.inspirenxe.karts.track.modifier.arena.IceArenaModifier;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.world.WorldArchetype;
-import org.spongepowered.api.world.WorldArchetypes;
 import org.spongepowered.api.world.gen.WorldGeneratorModifier;
 
-public final class Tracks {
+public final class Modifiers {
     public static void fakeInit() {
-        Modifiers.fakeInit();
         Arenas.fakeInit();
     }
 
     public static final class Arenas {
-        public static final WorldArchetype ICE_ARENA = WorldArchetype.builder().from(WorldArchetypes.OVERWORLD).generatorModifiers
-                (Modifiers.Arenas.ICE).build(Karts.PLUGIN_ID + ":track_arena_ice", "Ice Arena");
+        public static final WorldGeneratorModifier ICE = Sponge.getRegistry().register(WorldGeneratorModifier.class, new IceArenaModifier());
 
         private static void fakeInit() {}
 
         private Arenas() {}
     }
 
-    private Tracks() {}
+    private Modifiers() {}
 }

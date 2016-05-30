@@ -25,6 +25,7 @@
 package org.inspirenxe.karts.track;
 
 import org.inspirenxe.karts.Karts;
+import org.inspirenxe.karts.track.modifier.Modifiers;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.boss.BossBarColors;
 import org.spongepowered.api.boss.BossBarOverlays;
@@ -74,13 +75,12 @@ public final class TrackManager {
     }
 
     public boolean isTrackInstance(World world) {
-        for (UUID uniqueId : instances) {
-            if (world.getUniqueId().equals(uniqueId)) {
-                return true;
-            }
-        }
-
-        return false;
+//        for (UUID uniqueId : instances) {
+//            if (world.getUniqueId().equals(uniqueId)) {
+//                return true;
+//            }
+//        }
+        return world.getProperties().getGeneratorModifiers().contains(Modifiers.Arenas.ICE);
     }
 
     public void cleanupInstance(WorldProperties trackProperties) {

@@ -45,13 +45,18 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.entity.vehicle.Boat;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.entity.CollideEntityEvent;
 import org.spongepowered.api.event.entity.InteractEntityEvent;
 import org.spongepowered.api.event.entity.SpawnEntityEvent;
+import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.game.state.GameConstructionEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartingServerEvent;
 import org.spongepowered.api.event.item.inventory.InteractInventoryEvent;
 import org.spongepowered.api.plugin.Plugin;
+import org.spongepowered.api.scoreboard.Score;
+import org.spongepowered.api.scoreboard.Scoreboard;
+import org.spongepowered.api.scoreboard.objective.Objective;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.Location;
@@ -61,7 +66,10 @@ import org.spongepowered.api.world.WorldArchetypes;
 import org.spongepowered.api.world.storage.WorldProperties;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Plugin(id = Karts.PLUGIN_ID)
 public class Karts {
@@ -235,6 +243,35 @@ public class Karts {
     @Listener
     public void onInteractInventoryClose(InteractInventoryEvent.Close event) {
         event.setCancelled(true);
+    }
 
+    // TODO Boats currently do not fire collision events
+    @Listener
+    public void onCollideEntity(CollideEntityEvent.Impact event, @Root Boat boat) {
+        final Set<Player> players = new HashSet<>(boat.getPassengers().stream().filter(entity -> entity instanceof Player).map(entity -> (Player) entity)
+                .collect(Collectors.toList()));
+        if (boat.getPassengers().isEmpty()) {
+            return;
+        }
+
+        final Optional<Scoreboard> optScoreboard = ScoreboardManager.getScoreboardByWorld(boat.getWorld().getUniqueId());
+        if (optScoreboard.isPresent()) {
+            final Scoreboard scoreboard = optScoreboard.get();
+            for (Player player : players) {
+                final Text scoreText = Text.of(TextColors.GRAY, player.getName());
+
+                if (scoreboard != null) {
+                    final Optional<Objective> optObjective = scoreboard.getObjective("Leaderboards");
+                    if (optObjective.isPresent()) {
+                        final Optional<Score> optScore = optObjective.get().getScore(scoreText);
+                        if (optScore.isPresent()) {
+                            final Score score = optScore.get();
+                            final int currentScore = score.getScore();
+                            score.setScore(currentScore <= 0 ? 0 : currentScore - 1);
+                        }
+                    }
+                }
+            }
+        }
     }
 }

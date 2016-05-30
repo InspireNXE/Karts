@@ -1,3 +1,27 @@
+/**
+ * The MIT License (MIT)
+ *
+ * Copyright (c) InspireNXE <https://www.inspirenxe.org>
+ * Copyright (c) contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
 package org.inspirenxe.karts;
 
 import org.spongepowered.api.Sponge;
@@ -5,7 +29,6 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.vehicle.Boat;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.entity.CollideEntityEvent;
-import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.scoreboard.Score;
 import org.spongepowered.api.scoreboard.Scoreboard;
 import org.spongepowered.api.scoreboard.critieria.Criteria;
@@ -16,12 +39,9 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.World;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public class ScoreboardManager {
     private static final Map<UUID, Scoreboard> scoreboardByWorld = new HashMap<>();
@@ -59,33 +79,7 @@ public class ScoreboardManager {
         final Scoreboard scoreboard = scoreboardByWorld.get(uniqueId);
     }
 
-    // TODO Boats do not fire collision?
-    @Listener
-    public void onCollideEntity(CollideEntityEvent event, @Root Boat boat) {
-        final Set<Player> players = new HashSet<>(boat.getPassengers().stream().filter(entity -> entity instanceof Player).map(entity -> (Player) entity)
-                .collect(Collectors.toList()));
-        if (boat.getPassengers().isEmpty()) {
-            return;
-        }
-
-        final Scoreboard scoreboard = scoreboardByWorld.get(boat.getWorld().getUniqueId());
-        for (Player player : players) {
-            final Text scoreText = Text.of(TextColors.GRAY, player.getName());
-
-            if (scoreboard != null) {
-                final Optional<Objective> optObjective = scoreboard.getObjective("Leaderboards");
-                if (optObjective.isPresent()) {
-                    final Optional<Score> optScore = optObjective.get().getScore(scoreText);
-                    if (optScore.isPresent()) {
-                        final int score = optScore.get().getScore();
-                        optObjective.get().removeScore(scoreText);
-                        if (score <= 1) {
-                            return;
-                        }
-                        optObjective.get().getOrCreateScore(scoreText).setScore(score - 1);
-                    }
-                }
-            }
-        }
+    public static Optional<Scoreboard> getScoreboardByWorld(UUID uniqueId) {
+        return Optional.ofNullable(scoreboardByWorld.get(uniqueId));
     }
 }
